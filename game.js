@@ -482,22 +482,25 @@ async function enableTiltIfPossible() {
   }
 }
 
+// Start / restart the game when the button is tapped
 async function startGame() {
-  // If user is in portrait, nag them and don't start
-  if (window.innerHeight > window.innerWidth) {
-    updateOrientationOverlay();
-    statusEl.textContent = 'Rotate device to landscape before starting.';
-    return;
-  }
-
+  // Update status immediately so you know the tap was received
   statusEl.textContent = 'Starting…';
 
+  // Show / hide the "rotate your device" hint,
+  // but DO NOT block the game from starting.
+  updateOrientationOverlay();
+
+  // Try to enable tilt controls (iOS will show a permission dialog here)
   await enableTiltIfPossible();
 
-  // Reset game state
+  // Build a fresh world (ball + platforms) and reset camera/distance
   createWorld();
+
+  // Hide the start / game-over overlay so we can see the game
   overlay.style.display = 'none';
 
+  // Kick the main loop back into life
   running = true;
   lastTime = null;
   requestAnimationFrame(loop);
